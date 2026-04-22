@@ -3,13 +3,15 @@
 Follow these steps to deploy your professional meeting application.
 
 ## 1. Backend (Render)
-- **Repo**: Connect your GitHub repository.
-- **Root Directory**: `Backend`
-- **Build Command**: `npm install`
-- **Start Command**: `npm start`
+- **Automatic Deployment**: I have added a `render.yaml` file to the root. In Render, select **Blueprints** and connect your repo. It will automatically configure the Backend.
+- **Manual Setup (If not using Blueprints)**:
+    - **Root Directory**: `Backend`
+    - **Build Command**: `npm install`
+    - **Start Command**: `npm start`
 - **Environment Variables**:
-    - `MONGO_URL`: Your MongoDB Atlas connection string.
-    - `PORT`: `8000` (Render detects this automatically).
+    - `MONGO_URL`: Your MongoDB Atlas connection string (Set this manually in Render Dashboard).
+    - `PORT`: `8000` (Handled by `render.yaml`).
+    - `NODE_VERSION`: `20.10.0` (Handled by `render.yaml`).
 
 ## 2. Frontend (Vercel)
 - **Repo**: Connect your GitHub repository.

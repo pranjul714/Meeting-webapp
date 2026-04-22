@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: prism-video-backend
+    runtime: node
+    plan: free
+    rootDir: Backend
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 8000
+      - key: MONGO_URL
+        sync: false # Set this in the Render Dashboard -> Environment
+      - key: NODE_VERSION
+        value: 20.10.0 # pin to a stable LTS version to avoid issues
