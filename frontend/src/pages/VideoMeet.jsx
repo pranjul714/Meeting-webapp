@@ -586,10 +586,10 @@ export default function VideoMeetComponent() {
                 )}
 
                 <div className={cn(
-                    "flex-1 p-4 md:p-6 pb-40 md:pb-32 grid gap-4 md:gap-6 transition-all duration-700 items-center justify-center overflow-y-auto",
-                    videos.length === 0 ? "grid-cols-1 max-w-4xl mx-auto w-full" : 
-                    videos.length === 1 ? "grid-cols-1" :
-                    "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+                    "flex-1 p-4 md:p-10 pb-40 md:pb-20 grid gap-4 md:gap-8 transition-all duration-700 items-center justify-center overflow-y-auto",
+                    videos.length === 0 ? "grid-cols-1 max-w-5xl mx-auto w-full" : 
+                    videos.length === 1 ? "grid-cols-1 md:grid-cols-2 w-full max-w-7xl mx-auto" :
+                    "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 w-full max-w-[90rem] mx-auto"
                 )}>
                     {/* Local Video */}
                     <motion.div layout className="relative rounded-3xl md:rounded-[2.5rem] overflow-hidden bg-slate-900 border-2 border-blue-600/30 group shadow-2xl aspect-video w-full">
