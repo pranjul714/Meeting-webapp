@@ -11,10 +11,12 @@ import { connectToSocket } from "./controllers/socketManager.js";
 import cors from "cors";
 import userRoutes from "./routes/users.routes.js";
 import dotenv from "dotenv";
+import compression from "compression";
 
 dotenv.config();
 
 const app = express();
+app.use(compression());
 const server = createServer(app);
 const io = connectToSocket(server);
 

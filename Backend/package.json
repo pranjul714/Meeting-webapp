@@ -2,17 +2,18 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "license": "ISC",
+  "author": "apnacollege",
   "type": "module",
+  "main": "index.js",
   "scripts": {
     "dev": "nodemon src/app.js",
     "start": "node src/app.js",
     "prod": "pm2 src/app.js"
   },
-  "author": "apnacollege",
-  "license": "ISC",
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "compression": "^1.8.1",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
     "dotenv": "^17.4.2",

@@ -5,7 +5,7 @@ const meetingSchema = new Schema(
     {
         user_id: { type: String }, // Keep for legacy compatibility if needed
         hostId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-        meetingCode: { type: String, required: true },
+        meetingCode: { type: String, required: true, unique: true, index: true },
         title: { type: String, default: 'Untitled Meeting' },
         isLocked: { type: Boolean, default: false },
         chatHistory: [

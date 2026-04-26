@@ -2,6 +2,7 @@ import { Server } from "socket.io"
 import { Meeting } from "../models/meeting.model.js"
 
 let connections = {}
+let socketToRoom = {} // New: maps socket.id -> path
 let messages = {}
 let timeOnline = {}
 
@@ -30,15 +31,16 @@ export const connectToSocket = (server) => {
                     return;
                 }
 
-                if (connections[path] === undefined) {
-                    connections[path] = []
+                if (connections[meetingCode] === undefined) {
+                    connections[meetingCode] = []
                 }
-                connections[path].push(socket.id)
+                connections[meetingCode].push(socket.id)
+                socketToRoom[socket.id] = meetingCode // Use meetingCode instead of path
                 timeOnline[socket.id] = new Date();
 
-                for (let a = 0; a < connections[path].length; a++) {
-                    io.to(connections[path][a]).emit("user-joined", socket.id, connections[path])
-                }
+                connections[meetingCode].forEach(socketId => {
+                    io.to(socketId).emit("user-joined", socket.id, connections[meetingCode])
+                });
 
                 // Load and emit chat history from DB
                 if (meeting && meeting.chatHistory) {
@@ -56,33 +58,22 @@ export const connectToSocket = (server) => {
         })
 
         socket.on("chat-message", async (data, sender) => {
-            const [matchingRoom, found] = Object.entries(connections)
-                .reduce(([room, isFound], [roomKey, roomValue]) => {
-                    if (!isFound && roomValue.includes(socket.id)) {
-                        return [roomKey, true];
-                    }
-                    return [room, isFound];
-                }, ['', false]);
+            const meetingCode = socketToRoom[socket.id];
 
-            if (found === true) {
-                if (messages[matchingRoom] === undefined) {
-                    messages[matchingRoom] = []
+            if (meetingCode) {
+                if (messages[meetingCode] === undefined) {
+                    messages[meetingCode] = []
                 }
 
-                messages[matchingRoom].push({ 'sender': sender, "data": data, "socket-id-sender": socket.id })
+                messages[meetingCode].push({ 'sender': sender, "data": data, "socket-id-sender": socket.id })
                 
-                // Save to Database for persistence
-                try {
-                    const meetingCode = matchingRoom.split("/").pop();
-                    await Meeting.findOneAndUpdate(
-                        { meetingCode },
-                        { $push: { chatHistory: { sender, data } } }
-                    );
-                } catch (err) {
-                    console.error("Save chat error:", err);
-                }
+                // Save to Database asynchronously
+                Meeting.findOneAndUpdate(
+                    { meetingCode },
+                    { $push: { chatHistory: { sender, data } } }
+                ).catch(err => console.error("Save chat error:", err));
 
-                connections[matchingRoom].forEach((elem) => {
+                connections[meetingCode].forEach((elem) => {
                     io.to(elem).emit("chat-message", data, sender, socket.id)
                 })
             }
@@ -93,9 +84,10 @@ export const connectToSocket = (server) => {
             try {
                 await Meeting.findOneAndUpdate({ meetingCode }, { isLocked: lockedStatus });
                 // Notify all participants in that room
-                const [matchingRoom] = Object.entries(connections).find(([k, v]) => k.includes(meetingCode)) || [null];
-                if (matchingRoom) {
-                    io.to(matchingRoom).emit("room-lock-updated", lockedStatus);
+                if (connections[meetingCode]) {
+                    connections[meetingCode].forEach(socketId => {
+                        io.to(socketId).emit("room-lock-updated", lockedStatus);
+                    });
                 }
             } catch (err) {
                 console.error("Toggle lock error:", err);
@@ -104,29 +96,68 @@ export const connectToSocket = (server) => {
 
         // Host Control: Mute All
         socket.on("host-mute-all", (meetingCode) => {
-            const [matchingRoom] = Object.entries(connections).find(([k, v]) => k.includes(meetingCode)) || [null];
-            if (matchingRoom) {
-                io.to(matchingRoom).emit("force-mute-all");
+            if (connections[meetingCode]) {
+                connections[meetingCode].forEach(socketId => {
+                    io.to(socketId).emit("force-mute-all");
+                });
+            }
+        });
+
+        // Emoji Reaction
+        socket.on("emoji-reaction", (emoji, meetingCode) => {
+            if (connections[meetingCode]) {
+                connections[meetingCode].forEach((elem) => {
+                    io.to(elem).emit("emoji-reaction", emoji, socket.id);
+                });
+            }
+        });
+
+        // Whiteboard Draw Sync
+        socket.on("whiteboard-draw", (data, meetingCode) => {
+            if (connections[meetingCode]) {
+                connections[meetingCode].forEach((elem) => {
+                    if (elem !== socket.id) {
+                        io.to(elem).emit("whiteboard-draw", data);
+                    }
+                });
+            }
+        });
+
+        // Poll Events
+        socket.on("poll-create", (pollData, meetingCode) => {
+            if (connections[meetingCode]) {
+                const poll = { ...pollData, id: Date.now(), creator: socket.id };
+                connections[meetingCode].forEach((elem) => {
+                    io.to(elem).emit("poll-update", poll);
+                });
+            }
+        });
+
+        socket.on("poll-vote", (pollId, optionIndex, meetingCode) => {
+            if (connections[meetingCode]) {
+                connections[meetingCode].forEach((elem) => {
+                    io.to(elem).emit("poll-vote-update", { pollId, optionIndex, voter: socket.id });
+                });
             }
         });
 
         socket.on("disconnect", () => {
-            var key
-            for (const [k, v] of Object.entries(connections)) {
-                for (let a = 0; a < v.length; ++a) {
-                    if (v[a] === socket.id) {
-                        key = k
-                        for (let a = 0; a < connections[key].length; ++a) {
-                            io.to(connections[key][a]).emit('user-left', socket.id)
-                        }
-                        var index = connections[key].indexOf(socket.id)
-                        connections[key].splice(index, 1)
-                        if (connections[key].length === 0) {
-                            delete connections[key]
-                        }
-                    }
+            const key = socketToRoom[socket.id];
+            if (key && connections[key]) {
+                connections[key].forEach(socketId => {
+                    io.to(socketId).emit('user-left', socket.id);
+                });
+                
+                const index = connections[key].indexOf(socket.id);
+                if (index > -1) connections[key].splice(index, 1);
+                
+                if (connections[key].length === 0) {
+                    delete connections[key];
+                    delete messages[key];
                 }
             }
+            delete socketToRoom[socket.id];
+            delete timeOnline[socket.id];
         })
     })
 

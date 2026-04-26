@@ -10,7 +10,8 @@ import {
   Users,
   Smartphone,
   CheckCircle,
-  PlayCircle
+  PlayCircle,
+  Lock
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 
@@ -27,14 +28,15 @@ export default function LandingPage() {
                             <Video className="w-5 h-5 text-white" />
                         </div>
                         <h2 className="font-display font-bold text-2xl tracking-tight text-slate-900">
-                            Prism<span className="text-blue-600">Video</span>
+                            Meeting<span className="text-blue-600">App</span>
                         </h2>
                     </div>
 
                     <div className="hidden md:flex items-center gap-8">
-                        <a href="#features" className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Features</a>
-                        <a href="#security" className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Security</a>
-                        <Link to="/auth" className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Enterprise</Link>
+                   
+                        <Link to="/auth" className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Features</Link>
+                         <Link to="/auth" className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Security</Link>
+                          <Link to="/auth" className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Enterprise</Link>
                     </div>
 
                     <div className="flex items-center gap-4">
@@ -70,15 +72,15 @@ export default function LandingPage() {
                                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
                                     <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-600"></span>
                                 </span>
-                                Now powered by AI Clarity
+                               
                             </div>
 
-                            <h1 className="text-6xl md:text-8xl font-display font-black text-slate-900 leading-[0.95] tracking-tight">
-                                Connect with your <br />
+                            <h1 className="text-5xl md:text-8xl font-display font-black text-slate-900 leading-[1.1] md:leading-[0.95] tracking-tight">
+                                Connect with your <br className="hidden md:block" />
                                 <span className="text-blue-600 italic font-medium serif">loved ones</span>
                             </h1>
 
-                            <p className="text-xl text-slate-600 max-w-xl leading-relaxed">
+                            <p className="text-lg md:text-xl text-slate-600 max-w-xl leading-relaxed">
                                 Experience high-fidelity video conferencing that feels as natural as being in the same room. Crystal clear, secure, and built for simplicity.
                             </p>
 
@@ -151,22 +153,130 @@ export default function LandingPage() {
                     </div>
                 </section>
 
-                {/* Features Row */}
-                <section className="bg-slate-900 py-24">
-                    <div className="max-w-7xl mx-auto px-4 grid md:grid-cols-3 gap-12">
-                        {[
-                            { icon: ShieldCheck, title: "Private & Secure", desc: "End-to-end encryption for every single call. Your privacy is our priority." },
-                            { icon: Globe, title: "Global Reach", desc: "Optimized infrastructure for seamless connections across continents." },
-                            { icon: Smartphone, title: "All Devices", desc: "Join from any device, anywhere. Mobile, tablet, or desktop ready." }
-                        ].map((feature, i) => (
-                            <div key={i} className="space-y-4">
-                                <div className="w-12 h-12 bg-blue-600/20 rounded-xl flex items-center justify-center text-blue-500">
-                                    <feature.icon className="w-6 h-6" />
+                {/* Advanced Features Grid */}
+                <section className="py-32 px-4 bg-white relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-blue-50 rounded-full blur-3xl opacity-50" />
+                    
+                    <div className="max-w-7xl mx-auto space-y-24">
+                        <div className="text-center space-y-4">
+                            <h2 className="text-4xl md:text-5xl font-display font-black text-slate-900 tracking-tight">
+                                Smart AI Features <span className="text-blue-600">(Sabse Advance)</span>
+                            </h2>
+                            <p className="text-slate-500 max-w-2xl mx-auto font-medium">
+                                We've integrated state-of-the-art AI to make your meetings more productive and inclusive.
+                            </p>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                            {[
+                                { 
+                                    icon: Zap, 
+                                    title: "AI Meeting Assistant", 
+                                    desc: "Automatic transcription and summary (points mein conclusion) taiyaar kare.",
+                                    color: "bg-amber-100 text-amber-600"
+                                },
+                                { 
+                                    icon: ArrowRight, 
+                                    title: "Action Item Extraction", 
+                                    desc: "AI apne aap pehchan le ki kisne kya kaam karne ka waada kiya hai.",
+                                    color: "bg-emerald-100 text-emerald-600"
+                                },
+                                { 
+                                    icon: Globe, 
+                                    title: "Real-time Translation", 
+                                    desc: "Live translation screen par captions ke roop mein dikhe.",
+                                    color: "bg-blue-100 text-blue-600"
+                                },
+                                { 
+                                    icon: ShieldCheck, 
+                                    title: "AI Noise Cancellation", 
+                                    desc: "Background ke shor ko poori tarah khatam kar dena.",
+                                    color: "bg-purple-100 text-purple-600"
+                                }
+                            ].map((feature, i) => (
+                                <motion.div 
+                                    key={i}
+                                    whileHover={{ y: -10 }}
+                                    className="p-8 rounded-[2.5rem] bg-slate-50 border border-slate-100 space-y-6 transition-all"
+                                >
+                                    <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center shadow-sm", feature.color)}>
+                                        <feature.icon className="w-7 h-7" />
+                                    </div>
+                                    <h3 className="text-xl font-bold text-slate-900 tracking-tight">{feature.title}</h3>
+                                    <p className="text-slate-500 text-sm leading-relaxed">{feature.desc}</p>
+                                </motion.div>
+                            ))}
+                        </div>
+                    </div>
+                </section>
+
+                {/* Collaboration Section */}
+                <section className="py-32 px-4 bg-slate-50">
+                    <div className="max-w-7xl mx-auto">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                            <div className="space-y-8">
+                                <div className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-full text-slate-600 text-xs font-black uppercase tracking-widest">
+                                    <Users className="w-4 h-4 text-blue-600" />
+                                    Advanced Collaboration
                                 </div>
-                                <h3 className="text-xl font-bold text-white tracking-tight">{feature.title}</h3>
-                                <p className="text-slate-400 leading-relaxed text-sm">{feature.desc}</p>
+                                <h2 className="text-5xl font-display font-black text-slate-900 leading-tight tracking-tight">
+                                    Milkar kaam karne ke liye <br />
+                                    <span className="text-blue-600">Behtarin Tools.</span>
+                                </h2>
+                                <div className="space-y-6">
+                                    {[
+                                        { title: "Interactive Whiteboard", desc: "Sab log milkar ek hi screen par draw ya likh sakein." },
+                                        { title: "Document Co-editing", desc: "Meeting ke andar hi live file edit karna." },
+                                        { title: "Companion Mode", desc: "Mobile se chat ya poll control karein bina echo ke." }
+                                    ].map((item, i) => (
+                                        <div key={i} className="flex gap-4 p-6 bg-white rounded-3xl border border-slate-100 shadow-sm">
+                                            <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 flex-shrink-0">
+                                                <CheckCircle className="w-5 h-5" />
+                                            </div>
+                                            <div>
+                                                <h4 className="font-bold text-slate-900">{item.title}</h4>
+                                                <p className="text-slate-500 text-sm">{item.desc}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
-                        ))}
+                            <div className="relative">
+                                <div className="absolute -inset-4 bg-blue-600/5 rounded-[3rem] blur-2xl" />
+                                <div className="relative rounded-[2.5rem] bg-white p-4 shadow-2xl border border-slate-200">
+                                    <img 
+                                        src="https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=1200&auto=format&fit=crop" 
+                                        alt="Collaboration" 
+                                        className="rounded-[2rem] w-full"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                {/* Features Row */}
+                <section className="bg-slate-900 py-32">
+                    <div className="max-w-7xl mx-auto px-4">
+                        <div className="mb-16">
+                            <h2 className="text-3xl font-display font-black text-white tracking-tight">Security & Interaction</h2>
+                            <p className="text-slate-500 mt-2">Technical excellence meeting high-end security.</p>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+                            {[
+                                { icon: Lock, title: "End-to-End Encryption", desc: "Ye ensure karna ki meeting ka data koi teesra insaan na dekh sake." },
+                                { icon: Users, title: "Breakout Rooms", desc: "Badi meeting ko discussion ke liye chote groups mein baant dena." },
+                                { icon: PlayCircle, title: "Emoji Reactions", desc: "Video par live reactions dikhana bina mic on kiye feedback ke liye." }
+                            ].map((feature, i) => (
+                                <div key={i} className="space-y-4 group">
+                                    <div className="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center text-blue-500 group-hover:bg-blue-600 group-hover:text-white transition-all">
+                                        <feature.icon className="w-7 h-7" />
+                                    </div>
+                                    <h3 className="text-xl font-bold text-white tracking-tight">{feature.title}</h3>
+                                    <p className="text-slate-400 leading-relaxed text-sm">{feature.desc}</p>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </section>
             </main>
